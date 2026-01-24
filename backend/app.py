@@ -12,6 +12,10 @@ def home():
 
 @app.route('/api/generate-workflow', methods=['POST', 'OPTIONS'])
 def generate_workflow():
+    # Handle CORS preflight request
+    if request.method == 'OPTIONS':
+        return '', 204
+
     try:
         data = request.json
         user_message = data.get('message')
@@ -29,44 +33,30 @@ def generate_workflow():
             },
             json={
                 'model': 'llama-3.3-70b-versatile',
+                'response_format': {'type': 'json_object'},
                 'messages': [
                     {
                         'role': 'system',
-                        'content': '''You are a workflow automation expert. Convert user requests into structured workflows with triggers and actions. 
+                        'content': '''You MUST respond with ONLY valid JSON. No markdown, no code blocks, no explanations.
 
-Always respond with valid JSON in this exact format:
-{
-  "name": "Workflow Name",
-  "trigger": {
-    "type": "schedule|webhook|manual",
-    "config": {"interval": "daily"} or {"url": "..."} or {}
-  },
-  "steps": [
-    {
-      "id": "step1",
-      "type": "filter|slack_message|email|http_request|delay",
-      "name": "Step Name",
-      "config": {
-        "condition": "age > 4 days",
-        "source": "support tickets",
-        "channel": "#support",
-        "message": "Alert message"
-      }
-    }
-  ]
-}
+Convert user requests into workflow JSON with this structure:
+{"name":"string","trigger":{"type":"schedule|webhook|manual","config":{}},"steps":[]}
 
-Available trigger types: schedule, webhook, manual
-Available step types: filter, slack_message, email, http_request, delay
-Keep it simple and practical.'''
+Step types: filter, slack_message, email, http_request, delay, sub_workflow
+
+IMPORTANT: For complex requests with multiple phases, ALWAYS use sub_workflow to group related steps:
+{"id":"step1","type":"sub_workflow","name":"Phase Name","config":{},"steps":[...nested steps...]}
+
+Example for "handle customer support":
+{"name":"Customer Support Handler","trigger":{"type":"webhook","config":{}},"steps":[{"id":"step1","type":"sub_workflow","name":"Categorize Issue","config":{},"steps":[{"id":"step1.1","type":"filter","name":"Check issue type","config":{"condition":"issue.type"},"steps":[]}]},{"id":"step2","type":"sub_workflow","name":"Resolve Issue","config":{},"steps":[{"id":"step2.1","type":"http_request","name":"Lookup order","config":{"url":"/api/orders"},"steps":[]},{"id":"step2.2","type":"email","name":"Send resolution","config":{"to":"customer"},"steps":[]}]},{"id":"step3","type":"slack_message","name":"Log resolution","config":{"channel":"#support"},"steps":[]}]}'''
                     },
                     {
                         'role': 'user',
                         'content': user_message
                     }
                 ],
-                'temperature': 0.7,
-                'max_tokens': 1000
+                'temperature': 0.5,
+                'max_tokens': 2000
             }
         )
         
