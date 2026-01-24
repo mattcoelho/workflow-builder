@@ -4,9 +4,13 @@ import requests
 import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for all routes
 
-@app.route('/api/generate-workflow', methods=['POST'])
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({'message': 'Backend is running'})
+
+@app.route('/api/generate-workflow', methods=['POST', 'OPTIONS'])
 def generate_workflow():
     try:
         data = request.json
