@@ -34,32 +34,30 @@ const WorkflowBuilder = () => {
   };
 
   const generateWorkflow = async (userMessage) => {
-    if (!groqApiKey) {
-      setShowApiKeyInput(true);
-      setChatMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Please set your Groq API key first. Click the "Set Groq API Key" button below.' 
-      }]);
-      return;
-    }
-
     setIsGenerating(true);
     setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     try {
+      // Only include apiKey if user has set one
+      const requestBody = { message: userMessage };
+      if (groqApiKey) {
+        requestBody.apiKey = groqApiKey;
+      }
+
       const response = await fetch(BACKEND_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: userMessage,
-          apiKey: groqApiKey
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
         const errorData = await response.json();
+        // Check for rate limit error
+        if (response.status === 429) {
+          throw new Error('Rate limit reached. Please set your own Groq API key to continue.');
+        }
         throw new Error(`Backend error (${response.status}): ${errorData.error || 'Unknown error'}`);
       }
 
@@ -385,7 +383,7 @@ const WorkflowBuilder = () => {
             className="text-xs text-gray-500 hover:text-gray-700 mt-2 flex items-center gap-1"
           >
             <Settings className="w-3 h-3" />
-            {groqApiKey ? 'Update' : 'Set'} Groq API Key
+            {groqApiKey ? 'Update API Key' : 'Use Your Own API Key (optional)'}
           </button>
         </div>
       </div>
