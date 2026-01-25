@@ -1,6 +1,8 @@
-# AI Workflow Builder
+# Agent Smith
 
-An AI-powered workflow automation tool that converts natural language descriptions into executable workflows.
+Forge AI agent workflows in plain English. Like a blacksmith crafts tools, Agent Smith helps you craft automated workflows using natural language.
+
+> *"I'm going to enjoy watching you work."* — but for automation
 
 **Live Demo:** [agentsmith.teamdiogo.com](https://agentsmith.teamdiogo.com)
 

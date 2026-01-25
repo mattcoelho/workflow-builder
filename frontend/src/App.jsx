@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Play, Save, Loader, Zap, Clock, MessageSquare, Mail, Webhook, Settings, ChevronDown, ChevronRight, Layers, Filter, Globe } from 'lucide-react';
+import { Send, Play, Save, Loader, Zap, Clock, MessageSquare, Mail, Webhook, Settings, ChevronDown, ChevronRight, Layers, Filter, Globe, Hammer } from 'lucide-react';
 
 const WorkflowBuilder = () => {
   const [chatMessages, setChatMessages] = useState([
@@ -308,12 +308,12 @@ const WorkflowBuilder = () => {
     <div className="h-screen flex bg-gray-50">
       {/* Left Panel - Chat */}
       <div className="w-96 bg-white border-r flex flex-col">
-        <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="p-4 border-b bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
           <h1 className="text-xl font-bold flex items-center gap-2">
-            <Zap className="w-6 h-6" />
-            AI Workflow Builder
+            <Hammer className="w-6 h-6" />
+            Agent Smith
           </h1>
-          <p className="text-sm opacity-90 mt-1">Describe your automation in plain English</p>
+          <p className="text-sm opacity-90 mt-1">Forge AI agent workflows in plain English</p>
         </div>
 
         {/* API Key Input */}
@@ -447,7 +447,7 @@ const WorkflowBuilder = () => {
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400">
               <div className="text-center">
-                <Zap className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                <Hammer className="w-16 h-16 mx-auto mb-4 opacity-50" />
                 <p className="text-lg">Start by describing a workflow in the chat</p>
                 <p className="text-sm mt-2">Example: "Send daily email with analytics report"</p>
               </div>
