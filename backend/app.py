@@ -19,10 +19,11 @@ def generate_workflow():
     try:
         data = request.json
         user_message = data.get('message')
-        api_key = data.get('apiKey')
-        
+        # Use provided API key, or fall back to environment variable
+        api_key = data.get('apiKey') or os.environ.get('GROQ_API_KEY')
+
         if not api_key:
-            return jsonify({'error': 'API key required'}), 400
+            return jsonify({'error': 'No API key available. Please provide your own Groq API key.'}), 400
         
         # Call Groq API
         response = requests.post(
