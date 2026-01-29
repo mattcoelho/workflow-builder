@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Play, Save, Loader, Zap, Clock, MessageSquare, Mail, Webhook, Settings, ChevronDown, ChevronRight, Layers, Filter, Globe, Hammer } from 'lucide-react';
+import { Send, Play, Save, Loader, Zap, Clock, MessageSquare, Mail, Webhook, Settings, ChevronDown, ChevronRight, Layers, Filter, Globe, Hammer, Download } from 'lucide-react';
+import { transformToN8n } from './utils/n8nTransformer';
 
 const WorkflowBuilder = () => {
   const [chatMessages, setChatMessages] = useState([
@@ -198,6 +199,47 @@ const WorkflowBuilder = () => {
       role: 'assistant', 
       content: `Loaded workflow: "${savedWorkflow.name}"` 
     }]);
+  };
+
+  const exportToN8n = () => {
+    if (!workflow) {
+      alert('No workflow to export. Please generate or load a workflow first.');
+      return;
+    }
+
+    try {
+      // Transform workflow to n8n format
+      const n8nWorkflow = transformToN8n(workflow);
+      
+      // Create blob with pretty-printed JSON
+      const blob = new Blob([JSON.stringify(n8nWorkflow, null, 2)], { 
+        type: 'application/json' 
+      });
+      
+      // Create download link and trigger download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${workflow.name || 'workflow'}-n8n.json`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      // Show success message
+      setChatMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: `✓ Workflow exported to n8n format: ${workflow.name || 'workflow'}-n8n.json` 
+      }]);
+    } catch (error) {
+      console.error('Export error:', error);
+      setChatMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: `Error exporting workflow: ${error.message}` 
+      }]);
+    }
   };
 
   const getTriggerIcon = (type) => {
@@ -403,6 +445,14 @@ const WorkflowBuilder = () => {
                 >
                   <Save className="w-4 h-4" />
                   Save
+                </button>
+                <button
+                  onClick={exportToN8n}
+                  disabled={!workflow}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Download className="w-4 h-4" />
+                  Export to n8n
                 </button>
                 <button
                   onClick={executeWorkflow}
