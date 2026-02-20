@@ -1,0 +1,191 @@
+[
+  {
+    "id": "golden-001",
+    "user_message": "Send a Slack message every morning at 9am",
+    "expected_workflow": {
+      "name": "Morning Slack Notification",
+      "trigger": {"type": "schedule", "config": {"interval": "daily", "time": "09:00"}},
+      "steps": [
+        {"id": "step1", "type": "slack_message", "name": "Send morning message", "config": {"channel": "#general", "message": "Good morning!"}}
+      ]
+    },
+    "tags": ["simple", "slack_message", "schedule"],
+    "notes": "Basic single-step scheduled Slack notification"
+  },
+  {
+    "id": "golden-002",
+    "user_message": "When a webhook fires, filter for high priority items and send an email alert",
+    "expected_workflow": {
+      "name": "High Priority Email Alert",
+      "trigger": {"type": "webhook", "config": {"endpoint": "/alerts"}},
+      "steps": [
+        {"id": "step1", "type": "filter", "name": "Check priority", "config": {"condition": "priority == 'high'"}},
+        {"id": "step2", "type": "email", "name": "Send alert email", "config": {"to": "team@company.com", "subject": "High Priority Alert"}}
+      ]
+    },
+    "tags": ["simple", "filter", "email", "webhook"],
+    "notes": "Two-step workflow with filter and email"
+  },
+  {
+    "id": "golden-003",
+    "user_message": "Handle customer support tickets with categorization, resolution lookup, and notification",
+    "expected_workflow": {
+      "name": "Customer Support Handler",
+      "trigger": {"type": "webhook", "config": {}},
+      "steps": [
+        {
+          "id": "step1", "type": "sub_workflow", "name": "Categorize Issue", "config": {},
+          "steps": [
+            {"id": "step1.1", "type": "filter", "name": "Check issue type", "config": {"condition": "issue.type"}}
+          ]
+        },
+        {
+          "id": "step2", "type": "sub_workflow", "name": "Resolve Issue", "config": {},
+          "steps": [
+            {"id": "step2.1", "type": "http_request", "name": "Lookup resolution", "config": {"url": "/api/resolutions"}},
+            {"id": "step2.2", "type": "email", "name": "Send resolution to customer", "config": {"to": "customer"}}
+          ]
+        },
+        {"id": "step3", "type": "slack_message", "name": "Log resolution in Slack", "config": {"channel": "#support"}}
+      ]
+    },
+    "tags": ["complex", "sub_workflow", "multi_step"],
+    "notes": "Complex nested workflow with sub_workflows for customer support"
+  },
+  {
+    "id": "golden-004",
+    "user_message": "Check API health every 5 minutes and alert on failures",
+    "expected_workflow": {
+      "name": "API Health Monitor",
+      "trigger": {"type": "schedule", "config": {"interval": "every 5 minutes"}},
+      "steps": [
+        {"id": "step1", "type": "http_request", "name": "Health check", "config": {"url": "/health", "method": "GET"}},
+        {"id": "step2", "type": "filter", "name": "Check response status", "config": {"condition": "status != 200"}},
+        {"id": "step3", "type": "slack_message", "name": "Alert team", "config": {"channel": "#alerts", "message": "API health check failed"}},
+        {"id": "step4", "type": "email", "name": "Send alert email", "config": {"to": "ops@company.com", "subject": "API Down"}}
+      ]
+    },
+    "tags": ["simple", "http_request", "schedule", "multi_step"],
+    "notes": "Linear multi-step monitoring workflow"
+  },
+  {
+    "id": "golden-005",
+    "user_message": "Send a welcome email to new users",
+    "expected_workflow": {
+      "name": "New User Welcome",
+      "trigger": {"type": "webhook", "config": {"event": "user.created"}},
+      "steps": [
+        {"id": "step1", "type": "email", "name": "Send welcome email", "config": {"to": "new_user", "subject": "Welcome!", "body": "Welcome to our platform!"}}
+      ]
+    },
+    "tags": ["simple", "email", "webhook"],
+    "notes": "Simple single-step webhook-triggered email"
+  },
+  {
+    "id": "golden-006",
+    "user_message": "Build a data pipeline that fetches data from an API, processes it, waits 30 seconds, then sends a report via email and Slack",
+    "expected_workflow": {
+      "name": "Data Pipeline Report",
+      "trigger": {"type": "manual", "config": {}},
+      "steps": [
+        {
+          "id": "step1", "type": "sub_workflow", "name": "Fetch and Process Data", "config": {},
+          "steps": [
+            {"id": "step1.1", "type": "http_request", "name": "Fetch data from API", "config": {"url": "/api/data", "method": "GET"}},
+            {"id": "step1.2", "type": "filter", "name": "Process and validate data", "config": {"condition": "data.valid == true"}}
+          ]
+        },
+        {"id": "step2", "type": "delay", "name": "Wait 30 seconds", "config": {"duration": "30s"}},
+        {
+          "id": "step3", "type": "sub_workflow", "name": "Send Reports", "config": {},
+          "steps": [
+            {"id": "step3.1", "type": "email", "name": "Email report", "config": {"to": "team@company.com", "subject": "Data Report"}},
+            {"id": "step3.2", "type": "slack_message", "name": "Slack report", "config": {"channel": "#reports"}}
+          ]
+        }
+      ]
+    },
+    "tags": ["complex", "sub_workflow", "delay", "multi_step"],
+    "notes": "Complex pipeline with sub_workflows, delay, and multiple notification channels"
+  },
+  {
+    "id": "golden-007",
+    "user_message": "Every hour, check for new orders and send a summary to Slack",
+    "expected_workflow": {
+      "name": "Hourly Order Summary",
+      "trigger": {"type": "schedule", "config": {"interval": "hourly"}},
+      "steps": [
+        {"id": "step1", "type": "http_request", "name": "Fetch new orders", "config": {"url": "/api/orders", "method": "GET"}},
+        {"id": "step2", "type": "filter", "name": "Check for new orders", "config": {"condition": "orders.length > 0"}},
+        {"id": "step3", "type": "slack_message", "name": "Send order summary", "config": {"channel": "#sales", "message": "New orders summary"}}
+      ]
+    },
+    "tags": ["simple", "schedule", "http_request", "multi_step"],
+    "notes": "Scheduled workflow that checks and summarizes orders"
+  },
+  {
+    "id": "golden-008",
+    "user_message": "When a form is submitted, validate the data, save it via API, and send a confirmation email with a 5-minute delay",
+    "expected_workflow": {
+      "name": "Form Submission Handler",
+      "trigger": {"type": "webhook", "config": {"event": "form.submitted"}},
+      "steps": [
+        {"id": "step1", "type": "filter", "name": "Validate form data", "config": {"condition": "form.valid == true"}},
+        {"id": "step2", "type": "http_request", "name": "Save to database", "config": {"url": "/api/submissions", "method": "POST"}},
+        {"id": "step3", "type": "delay", "name": "Wait 5 minutes", "config": {"duration": "5m"}},
+        {"id": "step4", "type": "email", "name": "Send confirmation", "config": {"to": "submitter", "subject": "Submission Confirmed"}}
+      ]
+    },
+    "tags": ["simple", "webhook", "delay", "multi_step"],
+    "notes": "Linear workflow with validation, API call, delay, and confirmation"
+  },
+  {
+    "id": "golden-009",
+    "user_message": "Build an incident response workflow: detect the issue, notify the team, create a ticket, and follow up",
+    "expected_workflow": {
+      "name": "Incident Response",
+      "trigger": {"type": "webhook", "config": {"event": "incident.detected"}},
+      "steps": [
+        {
+          "id": "step1", "type": "sub_workflow", "name": "Detect and Classify", "config": {},
+          "steps": [
+            {"id": "step1.1", "type": "filter", "name": "Classify severity", "config": {"condition": "incident.severity"}},
+            {"id": "step1.2", "type": "http_request", "name": "Enrich with context", "config": {"url": "/api/incidents/context"}}
+          ]
+        },
+        {
+          "id": "step2", "type": "sub_workflow", "name": "Notify Team", "config": {},
+          "steps": [
+            {"id": "step2.1", "type": "slack_message", "name": "Alert Slack channel", "config": {"channel": "#incidents"}},
+            {"id": "step2.2", "type": "email", "name": "Email on-call team", "config": {"to": "oncall@company.com"}}
+          ]
+        },
+        {"id": "step3", "type": "http_request", "name": "Create ticket", "config": {"url": "/api/tickets", "method": "POST"}},
+        {
+          "id": "step4", "type": "sub_workflow", "name": "Follow Up", "config": {},
+          "steps": [
+            {"id": "step4.1", "type": "delay", "name": "Wait 1 hour", "config": {"duration": "1h"}},
+            {"id": "step4.2", "type": "http_request", "name": "Check resolution status", "config": {"url": "/api/incidents/status"}},
+            {"id": "step4.3", "type": "slack_message", "name": "Post status update", "config": {"channel": "#incidents"}}
+          ]
+        }
+      ]
+    },
+    "tags": ["complex", "sub_workflow", "multi_step", "incident"],
+    "notes": "Deeply nested incident response with multiple sub_workflows"
+  },
+  {
+    "id": "golden-010",
+    "user_message": "Send daily analytics report via email",
+    "expected_workflow": {
+      "name": "Daily Analytics Report",
+      "trigger": {"type": "schedule", "config": {"interval": "daily", "time": "08:00"}},
+      "steps": [
+        {"id": "step1", "type": "http_request", "name": "Fetch analytics data", "config": {"url": "/api/analytics", "method": "GET"}},
+        {"id": "step2", "type": "email", "name": "Send analytics report", "config": {"to": "team@company.com", "subject": "Daily Analytics Report"}}
+      ]
+    },
+    "tags": ["simple", "schedule", "email", "http_request"],
+    "notes": "Simple scheduled analytics report"
+  }
+]

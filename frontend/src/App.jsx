@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Play, Save, Loader, Zap, Clock, MessageSquare, Mail, Webhook, Settings, ChevronDown, ChevronRight, Layers, Filter, Globe, Hammer, Download } from 'lucide-react';
+import { Send, Play, Save, Loader, Zap, Clock, MessageSquare, Mail, Webhook, Settings, ChevronDown, ChevronRight, Layers, Filter, Globe, Hammer, Download, FlaskConical } from 'lucide-react';
 import { transformToN8n } from './utils/n8nTransformer';
+import EvalDashboard from './components/EvalDashboard';
 
 const WorkflowBuilder = () => {
+  const [activeTab, setActiveTab] = useState('builder');
   const [chatMessages, setChatMessages] = useState([
     { role: 'assistant', content: 'Hi! I can help you build automated workflows. Try something like: "Send me a Slack alert for any support tickets older than 4 days"' }
   ]);
@@ -351,13 +353,38 @@ const WorkflowBuilder = () => {
       {/* Left Panel - Chat */}
       <div className="w-96 bg-white border-r flex flex-col">
         <div className="p-4 border-b bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            <Hammer className="w-6 h-6" />
-            Agent Smith
-          </h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <Hammer className="w-6 h-6" />
+              Agent Smith
+            </h1>
+            <div className="flex gap-1 bg-white/20 rounded-lg p-0.5">
+              <button
+                onClick={() => setActiveTab('builder')}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  activeTab === 'builder' ? 'bg-white text-emerald-700' : 'text-white hover:bg-white/10'
+                }`}
+              >
+                Builder
+              </button>
+              <button
+                onClick={() => setActiveTab('eval')}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors flex items-center gap-1 ${
+                  activeTab === 'eval' ? 'bg-white text-emerald-700' : 'text-white hover:bg-white/10'
+                }`}
+              >
+                <FlaskConical className="w-3 h-3" />
+                Eval
+              </button>
+            </div>
+          </div>
           <p className="text-sm opacity-90 mt-1">Forge AI agent workflows in plain English</p>
         </div>
 
+        {activeTab === 'eval' ? (
+          <EvalDashboard />
+        ) : (
+        <>
         {/* API Key Input */}
         {showApiKeyInput && (
           <div className="p-4 bg-yellow-50 border-b">
@@ -428,9 +455,12 @@ const WorkflowBuilder = () => {
             {groqApiKey ? 'Update API Key' : 'Use Your Own API Key (optional)'}
           </button>
         </div>
+      </>
+        )}
       </div>
 
-      {/* Right Panel - Workflow Canvas */}
+      {activeTab === 'builder' && (
+      /* Right Panel - Workflow Canvas */
       <div className="flex-1 flex flex-col">
         <div className="bg-white border-b p-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">
@@ -547,6 +577,7 @@ const WorkflowBuilder = () => {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };
