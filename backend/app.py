@@ -3,6 +3,7 @@ from flask_cors import CORS
 import requests
 import os
 import time
+from config import GROQ_MODEL
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -53,7 +54,7 @@ def generate_workflow():
                 'Content-Type': 'application/json'
             },
             json={
-                'model': 'llama-3.3-70b-versatile',
+                'model': GROQ_MODEL,
                 'response_format': {'type': 'json_object'},
                 'messages': [
                     {'role': 'system', 'content': SYSTEM_PROMPT},
@@ -81,7 +82,7 @@ def generate_workflow():
             trace = Trace(
                 user_message=user_message,
                 system_prompt=SYSTEM_PROMPT,
-                model='llama-3.3-70b-versatile',
+                model=GROQ_MODEL,
                 temperature=0.5,
                 raw_response=response_data,
                 parsed_workflow=parsed_workflow,

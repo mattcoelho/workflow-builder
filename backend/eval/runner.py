@@ -2,6 +2,7 @@ import os
 import time
 import json
 import requests
+from config import GROQ_MODEL
 from .models import Trace, EvalResult
 from .traces import get_traces, get_trace, save_trace, parse_workflow_from_response
 from .golden_dataset import get_goldens, get_golden
@@ -38,7 +39,7 @@ def _generate_workflow(user_message, api_key, temperature=0.5):
                 'Content-Type': 'application/json'
             },
             json={
-                'model': 'llama-3.3-70b-versatile',
+                'model': GROQ_MODEL,
                 'messages': [
                     {'role': 'system', 'content': SYSTEM_PROMPT},
                     {'role': 'user', 'content': user_message}
@@ -62,7 +63,7 @@ def _generate_workflow(user_message, api_key, temperature=0.5):
     trace = Trace(
         user_message=user_message,
         system_prompt=SYSTEM_PROMPT,
-        model='llama-3.3-70b-versatile',
+        model=GROQ_MODEL,
         temperature=temperature,
         raw_response=response_data or {},
         parsed_workflow=parsed_workflow,

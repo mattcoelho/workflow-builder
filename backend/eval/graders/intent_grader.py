@@ -1,6 +1,6 @@
 import json
-import os
 import requests
+from config import GROQ_MODEL
 from ..models import EvalResult
 
 JUDGE_PROMPT = """You are evaluating whether an AI-generated workflow correctly fulfills a user's request.
@@ -54,7 +54,7 @@ def grade(trace_id, user_message, workflow, api_key, golden_workflow=None, golde
                 'Content-Type': 'application/json'
             },
             json={
-                'model': 'llama-3.3-70b-versatile',
+                'model': GROQ_MODEL,
                 'messages': [{'role': 'user', 'content': prompt}],
                 'response_format': {'type': 'json_object'},
                 'temperature': 0.1,

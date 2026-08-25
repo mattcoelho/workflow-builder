@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+from config import GROQ_MODEL
 from .models import GoldenExample
 from .traces import get_trace
 
@@ -129,7 +130,7 @@ Respond with ONLY valid JSON in this format:
                 'Content-Type': 'application/json'
             },
             json={
-                'model': 'llama-3.3-70b-versatile',
+                'model': GROQ_MODEL,
                 'messages': [{'role': 'user', 'content': prompt}],
                 'response_format': {'type': 'json_object'},
                 'temperature': 0.7,

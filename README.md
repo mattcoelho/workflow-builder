@@ -18,7 +18,7 @@ Forge AI agent workflows in plain English. Like a blacksmith crafts tools, Agent
 
 - **Frontend:** React + Vite + Tailwind CSS
 - **Backend:** Flask + Flask-CORS
-- **AI:** Groq API (Llama 3.3 70B)
+- **AI:** Groq API (GPT-OSS 120B by default)
 
 ## Quick Start
 
@@ -56,6 +56,7 @@ Frontend runs on `http://localhost:5173`
 
 Backend requires:
 - `GROQ_API_KEY` - Default Groq API key (optional, users can provide their own)
+- `GROQ_MODEL` - Groq model ID (optional, defaults to `openai/gpt-oss-120b`)
 
 ## Usage
 
